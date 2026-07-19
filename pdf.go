@@ -6,6 +6,15 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 )
 
+func init() {
+	// pdfcpu creates a config directory under the user's home on first use.
+	// In a hardened, rootless, read-only container there is no writable home,
+	// so that step fails and every PDF parse errors. The library ships this
+	// switch precisely for such environments — it runs on built-in defaults
+	// with no on-disk config.
+	api.DisableConfigDir()
+}
+
 // pdfMagic is the PDF header at offset 0. The PDF specification tolerates
 // content before the header, but accepting that would admit polyglot files
 // (e.g. HTML prepended to a valid PDF tail), so the gate requires it first.
