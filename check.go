@@ -92,10 +92,12 @@ func checkSigning(filename string, data []byte, o *options) (Result, error) {
 
 	switch {
 	case isPDF(data):
-		has, parseErr := pdfSignatures(data)
-		if !has && parseErr != nil {
-			return Result{}, fmt.Errorf("%w: PDF does not parse: %w", ErrMalformed, parseErr)
-		}
+		// Signing admits any format: a document about to be signed does not
+		// have to be perfectly parseable by our detector — the signing service
+		// is the authority on signability. A parse error only means the
+		// signature probe was inconclusive (best-effort HasSignatures), never
+		// a rejection; the offset-0 magic already excluded non-PDF content.
+		has, _ := pdfSignatures(data)
 		return Result{Kind: KindPDF, HasSignatures: has}, nil
 
 	case asice.IsZip(data):

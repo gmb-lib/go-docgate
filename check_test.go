@@ -266,8 +266,16 @@ func TestSigning_PDFChecked(t *testing.T) {
 	if !res.HasSignatures {
 		t.Fatalf("signature not detected: %+v", res)
 	}
-	if _, err := Check(ModeSigning, "broken.pdf", []byte("%PDF-1.4 then garbage")); !errors.Is(err, ErrMalformed) {
-		t.Fatalf("want ErrMalformed for a broken pdf, got %v", err)
+	// Signing mode is lenient: a %PDF- file whose body the detector cannot fully
+	// parse is still admitted (the signing service is the authority on
+	// signability) — never rejected as malformed. Only the extension-vs-magic
+	// lie is caught (below).
+	res, err = Check(ModeSigning, "rough.pdf", []byte("%PDF-1.4 then unparseable body"))
+	if err != nil {
+		t.Fatalf("signing mode must admit a magic-bearing PDF the detector can't parse, got %v", err)
+	}
+	if res.Kind != KindPDF {
+		t.Fatalf("got %+v", res)
 	}
 }
 
