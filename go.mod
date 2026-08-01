@@ -9,8 +9,8 @@ require (
 
 require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
-	github.com/hhrutter/lzw v1.0.0 // indirect
-	github.com/hhrutter/pkcs7 v0.2.2 // indirect
+	github.com/hhrutter/lzw v1.0.1 // indirect
+	github.com/hhrutter/pkcs7 v0.2.3 // indirect
 	github.com/hhrutter/tiff v1.0.6 // indirect
 	github.com/mattn/go-runewidth v0.0.27 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
