@@ -11,6 +11,9 @@ opaque upstream failures.
 go get github.com/gmb-lib/go-docgate
 ```
 
+See [`CHANGELOG.md`](./CHANGELOG.md) for what each release changed, and what it means for code that
+already uses this library, before you bump.
+
 All decisions are structural: magic bytes, archive shape, signature
 **presence**. The gate performs **no cryptographic verification** (that belongs
 to a validator such as EU DSS) and never executes or renders content. Bytes are
