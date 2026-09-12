@@ -11,6 +11,9 @@ opaque upstream failures.
 go get github.com/gmb-lib/go-docgate
 ```
 
+See [`CHANGELOG.md`](./CHANGELOG.md) for what each release changed, and what it means for code that
+already uses this library, before you bump.
+
 All decisions are structural: magic bytes, archive shape, signature
 **presence**. The gate performs **no cryptographic verification** (that belongs
 to a validator such as EU DSS) and never executes or renders content. Bytes are
@@ -84,3 +87,15 @@ on/off flag, so a deployment fronted by an already-gated edge can disable it.
 - No cryptographic validation, no trust decisions — presence and shape only.
 - No content scanning (anti-virus is a separate, deployment-specific concern).
 - No transport handling — the caller owns HTTP limits and multipart parsing.
+
+## Contributing
+
+Bug reports and pull requests are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) names the gate a
+change has to pass, what a change to this library needs, and the sign-off every commit carries.
+
+Suspected vulnerabilities go through the private route in [SECURITY.md](SECURITY.md) — never a
+public issue.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
