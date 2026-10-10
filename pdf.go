@@ -2,18 +2,18 @@ package docgate
 
 import (
 	"bytes"
+	"context"
 
 	"github.com/pdfcpu/pdfcpu/pkg/api"
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 )
 
-func init() {
-	// pdfcpu creates a config directory under the user's home on first use.
-	// In a hardened, rootless, read-only container there is no writable home,
-	// so that step fails and every PDF parse errors. The library ships this
-	// switch precisely for such environments — it runs on built-in defaults
-	// with no on-disk config.
-	api.DisableConfigDir()
-}
+// pdfConfig keeps the PDF library on its built-in defaults. Without an explicit
+// configuration it creates a config directory under the user's home on first
+// use; in a hardened, rootless, read-only container there is no writable home,
+// so that step fails and every PDF parse errors. The stateless configuration
+// never touches the filesystem. Each parse clones it, so sharing it is safe.
+var pdfConfig = model.NewStatelessConfiguration()
 
 // pdfMagic is the PDF header at offset 0. The PDF specification tolerates
 // content before the header, but accepting that would admit polyglot files
@@ -36,7 +36,8 @@ func isPDF(data []byte) bool {
 //
 // No cryptographic verification happens here; presence only.
 func pdfSignatures(data []byte) (has bool, parseErr error) {
-	info, err := api.PDFInfo(bytes.NewReader(data), "upload.pdf", nil, false, nil)
+	// The gate takes no context, so the parse runs to completion, as it always has.
+	info, err := api.PDFInfo(context.Background(), bytes.NewReader(data), "upload.pdf", nil, false, pdfConfig)
 	if err == nil && info != nil && info.Signatures {
 		return true, nil
 	}
