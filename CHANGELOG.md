@@ -4,6 +4,52 @@ Notable changes to this library, newest first. Versions are git tags; this file 
 for whoever bumps the dependency — what changed, and what it means for code that already
 uses it.
 
+## v1.0.5
+
+A security release. The PDF parser underneath the gate moves to **pdfcpu v0.16.1**, and the library
+**now needs Go 1.27.2**. The gate's API is unchanged, and on every test document it admits and
+refuses what it did before.
+
+### Changed
+
+- **The PDF parser, `github.com/pdfcpu/pdfcpu`, → v0.16.1** (was v0.15.0). Its v0.16.0 and v0.16.1
+  releases fix seven security advisories, most of them crashes or memory exhaustion on crafted PDFs,
+  the kind of input this gate exists to inspect: GHSA-6524-w46v-6399, GHSA-g766-88fx-58h8,
+  GHSA-fjh6-rrhv-4g63, GHSA-9mmx-88p2-c8c6, GHSA-prvw-v9vv-6966, GHSA-w2hj-54mc-76r4 and
+  GHSA-7v74-phpq-xq6g. Which of them the gate's own calls reach was not traced; the gate parses
+  untrusted PDFs, so it takes them all. pdfcpu v0.16 changed its API, and the gate follows it in
+  two places:
+  - the document-info call now takes a context; the gate passes a background one, since its own
+    API takes none, so a parse runs to completion as it always has;
+  - the built-in configuration is now passed explicitly, replacing the call pdfcpu deprecated.
+    The effect is the same: pdfcpu never creates a configuration directory, so the gate still works
+    in a read-only container with no writable home. Measured there: the tests pass, and the same
+    code without the explicit configuration fails with *"read-only file system"*.
+
+  On the signed test document, pdfcpu v0.15.0 and v0.16.1 give the same result. Both fail to parse
+  it, and the gate's byte scan finds the signature as before.
+
+- **The module declares `go 1.27.2`** (was `1.27.0`). Go 1.27.2 fixes standard-library
+  vulnerabilities that this library's code reaches under 1.27.0. `govulncheck` found eight it calls
+  before the move and none after it: GO-2026-6603, -6605, -6607, -6608, -6610, -6611, -6613 and
+  -6617, in `net/http`, `crypto/tls`, `net/textproto` and `mime/multipart`. Raise your own module's
+  `go` directive to `1.27.2`; from there the go command downloads and uses that toolchain by itself.
+
+### Notes
+
+- **Also moved:** `go-asice` → **v1.6.3** (the Go version only, no code change), and pdfcpu's own
+  dependencies: `hhrutter/tiff` → v1.0.7, `go-runewidth` → v0.0.31, `golang.org/x/image` → v0.47.0,
+  `golang.org/x/crypto` → v0.58.0, `golang.org/x/text` → v0.43.0.
+
+- **CI's linter moved to golangci-lint v2.14.0** (was v2.13.1). The earlier release cannot read Go
+  1.27.2's compiled standard library and stops before linting anything. CI's pinned GitHub Actions
+  also moved to their current commits.
+
+- The gate is green on Go 1.27.2: `go mod verify`, `go mod tidy -diff`, build, vet, `gofmt`,
+  golangci-lint v2.14.0, `go test -race` with **0 races**, the fuzz target for 30 seconds with no failing
+  input, and the tests again inside a read-only container with no writable home; `govulncheck`
+  reports nothing this library calls.
+
 ## v1.0.4
 
 No library code changed since v1.0.3, so the gate admits and refuses exactly what it did before.
