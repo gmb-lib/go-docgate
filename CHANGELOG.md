@@ -4,6 +4,18 @@ Notable changes to this library, newest first. Versions are git tags; this file 
 for whoever bumps the dependency — what changed, and what it means for code that already
 uses it.
 
+## v1.0.6
+
+This release refreshes the document parsers and requires **Go 1.27.3**. Raise your own module's
+`go` directive to `1.27.3` before upgrading.
+
+### Changed
+
+- **The module declares `go 1.27.3`** (was `1.27.2`).
+- **`github.com/gmb-lib/go-asice` → v1.6.4** (was v1.6.3) and
+  **`github.com/pdfcpu/pdfcpu` → v0.16.4** (was v0.16.1); their dependency graph was refreshed.
+- The gate's implementation and public API are unchanged.
+
 ## v1.0.5
 
 A security release. The PDF parser underneath the gate moves to **pdfcpu v0.16.1**, and the library
