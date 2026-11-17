@@ -4,6 +4,14 @@ Notable changes to this library, newest first. Versions are git tags; this file 
 for whoever bumps the dependency — what changed, and what it means for code that already
 uses it.
 
+## v1.0.7
+
+**Requires Go 1.27.4** (was 1.27.3), so a consumer on an older toolchain will not build this version. No source change: every exported symbol, signature and behaviour is as in v1.0.6.
+
+### Changed
+
+- `github.com/gmb-lib/go-asice` → v1.6.5.
+
 ## v1.0.6
 
 This release refreshes the document parsers and requires **Go 1.27.3**. Raise your own module's
